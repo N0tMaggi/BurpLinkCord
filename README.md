@@ -1,5 +1,7 @@
 <div align="center">
 
+> **Warning:** This is an early beta release. Expect bugs, breaking changes, and missing features. Use in controlled environments only.
+
 # BurpLinkCord
 
 **Burp Suite Professional extension with an embedded Discord bot.**  
