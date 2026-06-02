@@ -1,0 +1,13 @@
+server:
+  host: localhost
+  port: 8765
+
+security:
+  enabled: true
+
+discord:
+  enabled: false
+  presence: Watching BurpLinkCord
+
+logging:
+  audit: true
