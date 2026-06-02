@@ -1,23 +1,24 @@
-.gradle
+# Build
+.gradle/
 build/
+out/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.kotlin
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-### IntelliJ IDEA ###
+# IntelliJ IDEA
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/copilotDiffState.xml
 *.iws
 *.iml
 *.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
-### Eclipse ###
+# Eclipse
 .apt_generated
 .classpath
 .factorypath
@@ -29,15 +30,32 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
+# VS Code
 .vscode/
 
-### Mac OS ###
+# Mac OS
 .DS_Store
+
+# Sensitive / local config
+*.env
+.env
+.env.*
+config.local.*
+local.properties
+secrets.*
+
+# AI assistant tooling
+.claude/
+.cursor/
+.aider
+.aider.*
+.copilot/
+docs/superpowers/
+PLAN.md

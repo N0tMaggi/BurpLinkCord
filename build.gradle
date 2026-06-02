@@ -1,20 +1,75 @@
 plugins {
     id 'java'
+    id 'com.gradleup.shadow' version '8.3.6'
 }
 
-group = 'org.maggi'
-version = '1.0-SNAPSHOT'
+group = 'dev.maggi'
+version = '0.1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.0')
+    // Burp provides the Montoya API at runtime — mark as compileOnly so it is NOT bundled
+    compileOnly 'net.portswigger.burp.extensions:montoya-api:2025.5'
+
+    // All other deps must be bundled inside the fat JAR
+    implementation 'net.dv8tion:JDA:5.0.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.0'
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'ch.qos.logback:logback-classic:1.5.18'
+
+    testImplementation 'net.portswigger.burp.extensions:montoya-api:2025.5'
+    testImplementation platform('org.junit:junit-bom:5.12.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.named('test') {
     useJUnitPlatform()
 }
+
+// Prevent publishing/loading a thin JAR without bundled runtime dependencies.
+tasks.named('jar') {
+    enabled = false
+}
+
+// Shadow (fat JAR) — this is the artifact you load into Burp Suite
+tasks.named('shadowJar') {
+    archiveBaseName = 'BurpLinkCord'
+    archiveClassifier = ''   // no "-all" suffix
+    archiveVersion = project.version
+
+    manifest {
+        attributes(
+                'Implementation-Title': 'BurpLinkCord',
+                'Implementation-Version': project.version
+        )
+    }
+
+    // Merge service files so SPI-based libraries (Jackson, Logback) work correctly
+    mergeServiceFiles()
+
+    // Relocation is temporarily disabled because Shadow remapping fails on current bytecode.
+    // The fat JAR still bundles dependencies required at runtime.
+}
+
+// Make the default 'build' task produce the fat JAR
+tasks.named('assemble') {
+    dependsOn tasks.named('shadowJar')
+}
+
+
